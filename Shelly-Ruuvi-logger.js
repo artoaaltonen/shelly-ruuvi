@@ -119,19 +119,26 @@ function scan(ev, res) {
   if (ev !== BLE.Scanner.SCAN_RESULT) return;
   let measurement = RuuviParser.getData(res);
   if (measurement === null) return;
-  
+
   data[measurement.addr] = { temperature: measurement.temp, humidity: measurement.humidity };
 }
 
 function collect() {
-  if (data === {}) {
+  let dataclone = data;
+  data = {}
+
+  let postbody = JSON.stringify(dataclone);
+
+  if (postbody === "{}") {
     return;
   }
-  
-  let postbody = JSON.stringify(data);
-  data = {}
-  print(postbody);
+
   Shelly.call("HTTP.POST", { url: "https://hub.artoaaltonen.com/collect/shelly-ruuvis", body: postbody, timeout: 15, ssl_ca: "*" });
+
+  for (let addr in dataclone) {
+    print("Temperature data available at https://hub.artoaaltonen.com/sensor/" + addr + "/temperature");
+    print("Humidity data available at https://hub.artoaaltonen.com/sensor/" + addr + "/humidity");
+  }
 }
 
 BLE.Scanner.Start({ duration_ms: BLE.Scanner.INFINITE_SCAN }, scan);
