@@ -13,10 +13,14 @@ function getRelayStatus()
 
 function handleRelayStatus(result)
 {
-  if (!result.output) {
+  if (!result.output && !settings.inverted) {
     checkMinTemp();
-  } else {
+  } else if (!result.output && settings.inverted) {
     checkMaxTemp();
+  } else if (result.output && !settings.inverted) {
+    checkMaxTemp();
+  } else if (result.output && settings.inverted) {
+    checkMinTemp();
   }
 }
 
