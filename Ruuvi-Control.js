@@ -1,4 +1,4 @@
- let settings = {
+let settings = {
   relayId: 0,
   ruuviId: "", // ruuvi address (something like ae7734ffee01)
   minTemp: 20, // turn relay on when minTemp is reached
