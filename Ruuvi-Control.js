@@ -3,6 +3,7 @@ let settings = {
   ruuviId: "", // ruuvi address (something like ae7734ffee01)
   minTemp: 20, // turn relay on when minTemp is reached
   maxTemp: 23, // turn relay off when maxTemp is reached
+  inverted: false,
 };
 
 function getRelayStatus()
@@ -32,7 +33,7 @@ function handleMinTemp(response)
   }
 
   print("Turn relay ON.");
-  Shelly.call("Switch.Set", { id: settings.relayId, on: true });
+  Shelly.call("Switch.Set", { id: settings.relayId, on: relayStatus(true) });
 }
 
 function checkMaxTemp()
@@ -48,7 +49,12 @@ function handleMaxTemp(response)
   }
 
   print("Turn relay OFF.");
-  Shelly.call("Switch.Set", { id: settings.relayId, on: false });
+  Shelly.call("Switch.Set", { id: settings.relayId, on: relayStatus(false) });
+}
+
+function relayStatus(status)
+{
+    return settings.inverted ? !status : status;
 }
 
 Timer.set(60000, true, getRelayStatus);
